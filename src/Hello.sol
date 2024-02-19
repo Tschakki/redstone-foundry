@@ -33,8 +33,8 @@ contract Hello {
     }
     // Validate message length
     modifier validLength(string memory _message) {
-        require(_message.length() >= minLength, "Message too short");
-        require(_message.length() <= maxLength, "Message too long");
+        require(bytes(_message).length >= minLength, "Message too short");
+        require(bytes(_message).length <= maxLength, "Message too long");
         _;
     }
     // Validate message content
@@ -67,8 +67,8 @@ contract Hello {
 
     /** Functions */
     // Function to configure the blacklist
-    function setBlacklist(string[] memory _newWord) public onlyOwner {
-        blacklist = _newWord;
+    function setBlacklist(string[] memory _newBlackList) public onlyOwner {
+        blacklist = _newBlackList;
     } 
     // Function to configure min/max message length
     function setMinMaxMessageLength(uint32 _newMin,uint32 _newMax) public onlyOwner {
@@ -82,7 +82,7 @@ contract Hello {
         emit NewHello(msg.sender, _message);
     }
 
-    /* Net needed anymore, as state variables are public (maybe reimplement former plugin as view function?) */
+    /* Not needed anymore, as state variables are public (maybe reimplement former plugin as view function?) */
     /* // Function to get the Hello message counter
     function getHelloCounter() public view returns (uint32) {
         return counter;
