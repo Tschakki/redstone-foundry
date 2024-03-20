@@ -2,6 +2,8 @@
 // compiler version must be greater than or equal to 0.8.20 and less than 0.9.0
 pragma solidity ^0.8.20;
 import "lib/solidity-util/lib/Strings.sol";
+import "@redstone-finance/evm-connector/contracts/data-services/RapidDemoConsumerBase.sol";
+
 
 contract Hello {
     using Strings for string;
@@ -12,7 +14,7 @@ contract Hello {
     // State variable for the message counter
     uint32 public counter = 0;
     // Address of the contract owner
-    address public owner;
+    address public immutable owner;
     // Blacklist of words that are not allowed in the Hello message
     string[] public blacklist = ["word1","word2"];
     // Maximum length of the Hello message
@@ -81,14 +83,4 @@ contract Hello {
         counter+=1;
         emit NewHello(msg.sender, _message);
     }
-
-    /* Not needed anymore, as state variables are public (maybe reimplement former plugin as view function?) */
-    /* // Function to get the Hello message counter
-    function getHelloCounter() public view returns (uint32) {
-        return counter;
-    }
-    // Function to get the Hello message of an address
-    function getHello(address _address) public view returns (string memory) {
-        return message[_address];
-    } */
 }

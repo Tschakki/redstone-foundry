@@ -6,7 +6,6 @@ import {Hello} from "../src/Hello.sol";
 
 contract HelloTest is Test {
     Hello public hello;
-    Hello public hello2;
     address alice = makeAddr("alice");
     event NewHello(address indexed sender, string message);
 
@@ -15,14 +14,12 @@ contract HelloTest is Test {
     }
 
     function test_CreateHello() public {
-        // Sets up a prank as Alice with 100 ETH balance
-        // A prank sets msg.sender to the specified address for the next call.
-        hoax(alice, 100 ether);
         string memory message = "Hello World";
         // Expect NewHello event
         vm.expectEmit(true,false,false,false);
         emit NewHello(address(alice), message);
         // Create a new Hello message
+        hoax(alice, 100 ether);
         hello.createHello(message);
         // Check the message
         assertEq(hello.message(alice),message);
@@ -31,36 +28,30 @@ contract HelloTest is Test {
     }
 
     function test_MinLength() public {
-        hoax(alice, 100 ether);
         vm.expectRevert("Message too short");
         hello.createHello("Hi");
     }
 
     function test_MaxLength() public {
-        hoax(alice, 100 ether);
         vm.expectRevert("Message too long");
         hello.createHello("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean porta neque eget elit tristique pharetra. Pellentesque tempus sollicitudin tortor, ut tempus diam. Nulla facilisi. Donec at neque sapien.");
     }
 
     function test_Blacklist() public {
-        hoax(alice, 100 ether);
         vm.expectRevert("Message contains blacklisted word");
         hello.createHello("Hello word1");
     }
 
     function test_SetBlacklist() public {
-        hoax(alice, 100 ether);
-        hello2 = new Hello();
         // Create a temporary dynamic array of strings
         string[] memory bl = new string[](3);
         bl[0] = "word1";
         bl[1] = "word3";
         bl[2] = "word4";
-        hoax(alice, 100 ether);
-        hello2.setBlacklist(bl);
+        hello.setBlacklist(bl);
         string[] memory getBL = new string[](2);
-        getBL[0] = hello2.blacklist(0);
-        getBL[1] = hello2.blacklist(1);
+        getBL[0] = hello.blacklist(0);
+        getBL[1] = hello.blacklist(1);
         assertEq(getBL[0], bl[0]);
         assertEq(getBL[1], bl[1]);
     }
@@ -70,20 +61,17 @@ contract HelloTest is Test {
         bl[0] = "word1";
         bl[1] = "word3";
         bl[2] = "word4";
-        hoax(alice, 100 ether);
         vm.expectRevert("Not owner");
+        hoax(alice, 100 ether);
         hello.setBlacklist(bl);
     }
 
     function test_SetMinMaxMessageLength() public {
         uint32 newMin = 1;
         uint32 newMax = 500;
-        hoax(alice, 100 ether);
-        hello2 = new Hello();
-        hoax(alice, 100 ether);
-        hello2.setMinMaxMessageLength(newMin,newMax);
-        assertEq(hello2.minLength(), newMin);
-        assertEq(hello2.maxLength(), newMax);
+        hello.setMinMaxMessageLength(newMin,newMax);
+        assertEq(hello.minLength(), newMin);
+        assertEq(hello.maxLength(), newMax);
     }
 
     function test_SetMinMaxMessageLengthNotOwner() public {
@@ -91,7 +79,7 @@ contract HelloTest is Test {
         uint32 newMax = 500;
         hoax(alice, 100 ether);
         vm.expectRevert();
-        hello2.setMinMaxMessageLength(newMin,newMax);
+        hello.setMinMaxMessageLength(newMin,newMax);
     }
     /* function test_getHello() public {
         hoax(alice, 100 ether);
