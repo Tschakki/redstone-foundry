@@ -2,8 +2,9 @@
 // compiler version must be greater than or equal to 0.8.20 and less than 0.9.0
 pragma solidity ^0.8.20;
 import "lib/solidity-util/lib/Strings.sol";
+import "redstone-finance/data-services/RapidDemoConsumerBase.sol";
 
-contract Hello {
+contract HelloRedstone is RapidDemoConsumerBase {
     using Strings for string;
 
     /** State variables */
@@ -80,5 +81,13 @@ contract Hello {
         message[msg.sender] = _message;
         counter+=1;
         emit NewHello(msg.sender, _message);
+    }
+
+    /**
+     * Returns the latest price of ETH
+     */
+    function getLatestEthPrice() public view returns (uint256) {
+        bytes32 dataFeedId = bytes32("ETH");
+        return getOracleNumericValueFromTxMsg(dataFeedId);
     }
 }
